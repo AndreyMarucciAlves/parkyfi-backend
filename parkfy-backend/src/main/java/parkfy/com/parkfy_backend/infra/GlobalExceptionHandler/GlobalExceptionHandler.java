@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import parkfy.com.parkfy_backend.infra.exception.ResourceNotFoundException;
 
 import java.time.Instant;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -22,9 +23,12 @@ public class GlobalExceptionHandler {
         String message = exception.getBindingResult()
                 .getFieldErrors()
                 .stream()
-                .findFirst()
-                .map(error -> error.getDefaultMessage())
-                .orElse("Dados da requisição inválidos.");
+                .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                .collect(Collectors.joining("; "));
+
+        if (message.isBlank()) {
+            message = "Dados da requisição inválidos.";
+        }
 
         return buildResponse(HttpStatus.BAD_REQUEST, message);
     }
