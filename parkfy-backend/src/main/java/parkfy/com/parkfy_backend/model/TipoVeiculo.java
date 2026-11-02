@@ -14,17 +14,20 @@ import lombok.Setter;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "tarifa")
+@Table(name = "tipo_veiculo")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Tarifa {
+public class TipoVeiculo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_tarifa")
+    @Column(name = "id_tipo_veiculo")
     private Long id;
+
+    @Column(name = "descricao", nullable = false)
+    private String descricao;
 
     @Column(name = "valor_hora", nullable = false)
     private BigDecimal valorHora;
