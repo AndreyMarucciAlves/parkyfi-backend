@@ -22,13 +22,13 @@ public class Veiculo {
     @Column(name = "placa", nullable = false, unique = true)
     private String placa;
 
-    @Column(name = "modelo", nullable = false)
+    @Column(name = "modelo")
     private String modelo;
 
-    @Column(name = "cor", nullable = false)
+    @Column(name = "cor")
     private String cor;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "id_tipo_veiculo", nullable = false)
-    private TipoVeiculo IdTipoVeiculo;
+    private TipoVeiculo tipoVeiculo;
 }
