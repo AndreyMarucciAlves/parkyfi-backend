@@ -71,7 +71,7 @@ public class VeiculoService {
         veiculo.setModelo(veiculoSaveDto.modelo());
 
         TipoVeiculo tipoVeiculo = tipoVeiculoService.getById(veiculoSaveDto.idTipoVeiculo());
-        veiculo.setIdTipoVeiculo(tipoVeiculo);
+        veiculo.setTipoVeiculo(tipoVeiculo);
 
         return veiculoRepository.save(veiculo).getId();
     }
@@ -104,7 +104,7 @@ public class VeiculoService {
      * @return tipo de veículo encontrado
      * @author: Andrey Marucci
      */
-    private Veiculo getById(Long id) {
+    public Veiculo getById(Long id) {
         return veiculoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Veículo", id));
     }
@@ -125,7 +125,13 @@ public class VeiculoService {
         }
     }
 
+    // Função auxiliar para buscar veiculo pelo número da placa (Unique value no banco de dados)
+    public Veiculo getVeiculoByPlaca(String placa) {
+        return veiculoRepository.findByPlacaIgnoreCase(placa)
+                .orElse( null);
+    }
+
     private VeiculoSaveDto toDto(Veiculo veiculo) {
-        return new VeiculoSaveDto(veiculo.getId(), veiculo.getPlaca(), veiculo.getModelo(), veiculo.getCor(), veiculo.getIdTipoVeiculo().getId());
+        return new VeiculoSaveDto(veiculo.getId(), veiculo.getPlaca(), veiculo.getModelo(), veiculo.getCor(), veiculo.getTipoVeiculo().getId());
     }
 }
