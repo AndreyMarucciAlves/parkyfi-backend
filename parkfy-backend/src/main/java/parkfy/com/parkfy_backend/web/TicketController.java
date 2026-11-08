@@ -10,9 +10,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import parkfy.com.parkfy_backend.dto.pageable.FilterPageable;
+import parkfy.com.parkfy_backend.dto.pageable.ResponsePagedCommom;
 import parkfy.com.parkfy_backend.dto.ticket.DadosTickectSaidaDto;
+import parkfy.com.parkfy_backend.dto.ticket.TicketResponseDto;
 import parkfy.com.parkfy_backend.dto.ticket.TicketSaidaDto;
 import parkfy.com.parkfy_backend.dto.ticket.TicketSaveDto;
+import parkfy.com.parkfy_backend.dto.tipoveiculo.VeiculoSaveDto;
 import parkfy.com.parkfy_backend.service.TicketService;
 
 @RestController
@@ -21,6 +25,12 @@ import parkfy.com.parkfy_backend.service.TicketService;
 public class TicketController {
 
     private final TicketService tickectService;
+
+
+    @GetMapping
+    public ResponseEntity<ResponsePagedCommom<TicketResponseDto>> findAllPageable(@Valid FilterPageable filterPageable){
+        return ResponseEntity.ok(tickectService.findAllPageable(filterPageable));
+    }
 
     @PostMapping("/save")
     public ResponseEntity<Long> save(@Valid @RequestBody  TicketSaveDto ticketSaveDto) {

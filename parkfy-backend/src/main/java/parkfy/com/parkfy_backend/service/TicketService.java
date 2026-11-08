@@ -1,9 +1,14 @@
 package parkfy.com.parkfy_backend.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import parkfy.com.parkfy_backend.dto.pageable.FilterPageable;
+import parkfy.com.parkfy_backend.dto.pageable.ResponsePagedCommom;
 import parkfy.com.parkfy_backend.dto.ticket.DadosTickectSaidaDto;
+import parkfy.com.parkfy_backend.dto.ticket.TicketResponseDto;
 import parkfy.com.parkfy_backend.dto.ticket.TicketSaidaDto;
 import parkfy.com.parkfy_backend.dto.ticket.TicketSaveDto;
 import parkfy.com.parkfy_backend.dto.tipoveiculo.VeiculoSaveDto;
@@ -25,6 +30,23 @@ public class TicketService {
 
     private final TicketReposirory ticketReposirory;
     private final VeiculoService veiculoService;
+
+
+    @Transactional(readOnly = true)
+    public ResponsePagedCommom<TicketResponseDto> findAllPageable(FilterPageable filterPageable) {
+        var listTicketsBd = ticketReposirory.findAll(PageRequest.of(filterPageable.getPage(), filterPageable.getSize(), Sort.by(filterPageable.getDirection(), filterPageable.getOrderBy())));
+
+        var listTicketsResponse = listTicketsBd.stream()
+                .map(this::toDto)
+                .toList();
+
+        return new ResponsePagedCommom<TicketResponseDto>(
+                listTicketsResponse,
+                listTicketsBd.getTotalElements(),
+                listTicketsBd.getTotalPages(),
+                filterPageable.getSize()
+        );
+    }
 
 
     /**
@@ -134,6 +156,18 @@ public class TicketService {
 
         return valorTarifa.multiply(horasEstacionado)
                 .setScale(2, RoundingMode.HALF_UP);
+    }
+
+    private TicketResponseDto toDto(Ticket ticket) {
+        return new TicketResponseDto(
+                ticket.getId(),
+                ticket.getVeiculo().getId(),
+                ticket.getVeiculo().getPlaca(),
+                ticket.getDataEntrada(),
+                ticket.getDataSaida(),
+                ticket.getValor(),
+                ticket.getStatus()
+        );
     }
 
 
