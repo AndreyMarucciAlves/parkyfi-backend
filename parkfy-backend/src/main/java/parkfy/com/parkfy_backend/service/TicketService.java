@@ -98,9 +98,8 @@ public class TicketService {
         LocalDateTime dataEntrada = ticket.getDataEntrada();
         LocalDateTime dataSaida = LocalDateTime.now();
 
-        if(dataSaida.isBefore(dataEntrada)) {
-            throw new BadRequestException("A data de saída não pode ser anterior à data de entrada.");
-        }
+        // valida se a data de saída não é anterior à data de entrada
+        validarDataSaida(ticket, dataSaida);
 
         // Calcula o valor total com base na diferença de tempo entre a entrada e a saída
         long minutosEstacionado = ChronoUnit.MINUTES.between(dataEntrada, dataSaida);
@@ -132,6 +131,9 @@ public class TicketService {
             throw new BadRequestException("O ticket informado já está fechado e não pode ser processado para saída.");
         }
 
+        // valida se a data de saída não é anterior à data de entrada
+        validarDataSaida(ticket, ticketSaidaDto.dataHoraSaida());
+
         long minutosEstacionado = ChronoUnit.MINUTES.between(ticket.getDataEntrada(), ticketSaidaDto.dataHoraSaida());
         BigDecimal valorTarifa = ticket.getVeiculo().getTipoVeiculo().getValorHora();
 
@@ -141,6 +143,19 @@ public class TicketService {
         ticket.setStatus(StatusTicket.FECHADO);
         ticket.setValor(valorTotal);
         ticketReposirory.save(ticket);
+    }
+
+    /**
+     * Valida se a data de saída informada é anterior à data de entrada do ticket.
+     * @throws BadRequestException se a data de saída for anterior à data de entrada
+     * @param ticket ticket a ser validado
+     * @param dataSaida data de saída a ser validada
+     * @Author: João Szczypior
+     */
+    private void validarDataSaida(Ticket ticket, LocalDateTime dataSaida) {
+        if (dataSaida.isBefore(ticket.getDataEntrada())) {
+            throw new BadRequestException("A data de saída não pode ser anterior à data de entrada.");
+        }
     }
 
     /**
