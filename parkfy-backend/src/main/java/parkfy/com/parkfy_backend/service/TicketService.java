@@ -30,6 +30,7 @@ public class TicketService {
 
     private final TicketReposirory ticketReposirory;
     private final VeiculoService veiculoService;
+    private final TipoVeiculoService tipoVeiculoService;
 
 
     @Transactional(readOnly = true)
@@ -68,6 +69,7 @@ public class TicketService {
                 throw new BadRequestException("Já existe um ticket ativo para o veículo com a placa informada. Não é possível registrar uma nova entrada.");
             }
         } else {
+            tipoVeiculoService.validarTipoveiculoExistente(dto.tipoVeiculoId());
             Long veiculoId = veiculoService.save(new VeiculoSaveDto(null,dto.placa(), null, null, dto.tipoVeiculoId()));
             veiculo = veiculoService.getById(veiculoId);
         }
