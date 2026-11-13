@@ -93,6 +93,12 @@ public class TipoVeiculoService {
                 .orElseThrow(() -> new ResourceNotFoundException("Tipo de veículo", id));
     }
 
+    public void validarTipoveiculoExistente(Long tipoVeiculoId) {
+        if(!tipoVeiculoRepository.existsById(tipoVeiculoId)) {
+            throw new ResourceNotFoundException("Tipo de veículo", tipoVeiculoId);
+        }
+    }
+
     private TipoVeiculoSaveDto toDto(TipoVeiculo tipoVeiculo) {
         return new TipoVeiculoSaveDto(tipoVeiculo.getId(), tipoVeiculo.getDescricao(), tipoVeiculo.getValorHora());
     }
