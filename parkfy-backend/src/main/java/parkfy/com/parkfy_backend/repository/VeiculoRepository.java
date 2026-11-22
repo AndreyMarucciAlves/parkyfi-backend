@@ -6,7 +6,7 @@ import parkfy.com.parkfy_backend.model.Veiculo;
 import java.util.Optional;
 
 public interface VeiculoRepository extends JpaRepository<Veiculo, Long> {
-    boolean existsByPlaca(String placa);
-    boolean existsByPlacaAndIdNot(String placa, Long id);
+    boolean existsByPlacaIgnoreCase(String placa);
+    boolean existsByPlacaIgnoreCaseAndIdNot(String placa, Long id);
     Optional<Veiculo> findByPlacaIgnoreCase(String placa);
 }
