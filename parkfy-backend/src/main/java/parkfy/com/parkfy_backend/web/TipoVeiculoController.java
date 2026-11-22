@@ -15,6 +15,8 @@ import parkfy.com.parkfy_backend.dto.pageable.ResponsePagedCommom;
 import parkfy.com.parkfy_backend.dto.tipoveiculo.TipoVeiculoSaveDto;
 import parkfy.com.parkfy_backend.service.TipoVeiculoService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/tipo-veiculo")
 @RequiredArgsConstructor
@@ -25,6 +27,11 @@ public class TipoVeiculoController {
     @GetMapping
     public ResponseEntity<ResponsePagedCommom<TipoVeiculoSaveDto>> findAllPageable(@Valid FilterPageable filterPageable) {
         return ResponseEntity.ok(tipoVeiculoService.findAllPageable(filterPageable));
+    }
+
+    @GetMapping("/opcoes")
+    public ResponseEntity<List<TipoVeiculoSaveDto>> findOpcoes() {
+        return ResponseEntity.ok(tipoVeiculoService.findOpcoes());
     }
 
     @PostMapping("/save")

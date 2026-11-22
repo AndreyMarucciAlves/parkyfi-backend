@@ -43,6 +43,18 @@ public class TipoVeiculoService {
     }
 
     /**
+     * Retorna todos os tipos de veículo ordenados por descrição, para uso em campos de seleção
+     * @return lista completa de tipos de veículo
+     */
+    @Transactional(readOnly = true)
+    public List<TipoVeiculoSaveDto> findOpcoes() {
+        return tipoVeiculoRepository.findAll(Sort.by(Sort.Direction.ASC, "descricao"))
+                .stream()
+                .map(this::toDto)
+                .toList();
+    }
+
+    /**
      * Salva ou atualiza um tipo de veículo no Banco de Dados (Upsert)
      * @param tipoVeiculoSaveDto dto com os dados do tipo de veículo a ser salvo ou atualizado
      * @return id do tipo de veículo salvo ou atualizado
