@@ -17,6 +17,7 @@ import parkfy.com.parkfy_backend.model.Veiculo;
 import parkfy.com.parkfy_backend.repository.VeiculoRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -85,6 +86,17 @@ public class VeiculoService {
     @Transactional(readOnly = true)
     public VeiculoSaveDto getEdicao(Long id) {
         return this.toDto(this.getById(id));
+    }
+
+    /**
+     * Busca os dados de um veículo pela placa, ignorando maiúsculas e minúsculas
+     * @param placa placa do veículo
+     * @return dto do veículo, ou vazio caso a placa ainda não esteja cadastrada
+     */
+    @Transactional(readOnly = true)
+    public Optional<VeiculoSaveDto> findByPlaca(String placa) {
+        return veiculoRepository.findByPlacaIgnoreCase(placa.trim())
+                .map(this::toDto);
     }
 
     /**
