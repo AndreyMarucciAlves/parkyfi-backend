@@ -1,0 +1,22 @@
+package parkfy.com.parkfy_backend.web;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import parkfy.com.parkfy_backend.dto.dashboard.IndicadoresDashboardDto;
+import parkfy.com.parkfy_backend.service.DashboardService;
+
+@RestController
+@RequestMapping("/dashboard")
+@RequiredArgsConstructor
+public class DashboardController {
+
+    private final DashboardService dashboardService;
+
+    @GetMapping("/indicadores")
+    public ResponseEntity<IndicadoresDashboardDto> getIndicadores() {
+        return ResponseEntity.ok(dashboardService.getIndicadores());
+    }
+}

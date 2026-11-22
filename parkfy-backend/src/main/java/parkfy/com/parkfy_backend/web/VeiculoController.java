@@ -32,6 +32,13 @@ public class VeiculoController {
         return ResponseEntity.ok(veiculoService.getEdicao(idVeiculo));
     }
 
+    @GetMapping("/placa/{placa}")
+    public ResponseEntity<VeiculoSaveDto> findByPlaca(@PathVariable String placa){
+        return veiculoService.findByPlaca(placa)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.noContent().build());
+    }
+
     @DeleteMapping("/{idVeiculo}")
     public ResponseEntity<Void> deleteVeiculo(@PathVariable Long idVeiculo){
         veiculoService.delete(idVeiculo);
