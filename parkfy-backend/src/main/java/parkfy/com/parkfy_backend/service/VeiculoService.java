@@ -17,7 +17,6 @@ import parkfy.com.parkfy_backend.model.Veiculo;
 import parkfy.com.parkfy_backend.repository.VeiculoRepository;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -145,9 +144,9 @@ public class VeiculoService {
                 .orElse( null);
     }
 
-    // Mantém a placa em um formato único no banco, sem espaços nas pontas e em maiúsculas
+    // Mantém a placa como digitada, removendo apenas os espaços nas pontas
     private String normalizarPlaca(String placa) {
-        return placa.trim().toUpperCase(Locale.ROOT);
+        return placa.trim();
     }
 
     private VeiculoSaveDto toDto(Veiculo veiculo) {
