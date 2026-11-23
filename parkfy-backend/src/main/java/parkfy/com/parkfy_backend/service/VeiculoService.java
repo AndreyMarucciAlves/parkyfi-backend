@@ -56,7 +56,8 @@ public class VeiculoService {
      */
     @Transactional
     public Long save(VeiculoSaveDto veiculoSaveDto){
-        this.validarPlacaUnica(veiculoSaveDto.placa(), veiculoSaveDto.id());
+        String placa = this.normalizarPlaca(veiculoSaveDto.placa());
+        this.validarPlacaUnica(placa, veiculoSaveDto.id());
 
         Veiculo veiculo;
 
@@ -67,7 +68,7 @@ public class VeiculoService {
             veiculo = new Veiculo();
         }
 
-        veiculo.setPlaca(veiculoSaveDto.placa());
+        veiculo.setPlaca(placa);
         veiculo.setCor(veiculoSaveDto.cor());
         veiculo.setModelo(veiculoSaveDto.modelo());
 
@@ -95,7 +96,7 @@ public class VeiculoService {
      */
     @Transactional(readOnly = true)
     public Optional<VeiculoSaveDto> findByPlaca(String placa) {
-        return veiculoRepository.findByPlacaIgnoreCase(placa.trim())
+        return veiculoRepository.findByPlacaIgnoreCase(this.normalizarPlaca(placa))
                 .map(this::toDto);
     }
 
@@ -129,8 +130,8 @@ public class VeiculoService {
      */
     private void validarPlacaUnica(String placa, Long id) {
         boolean placaEmUso = (id == null || id <= 0)
-                ? veiculoRepository.existsByPlaca(placa)
-                : veiculoRepository.existsByPlacaAndIdNot(placa, id);
+                ? veiculoRepository.existsByPlacaIgnoreCase(placa)
+                : veiculoRepository.existsByPlacaIgnoreCaseAndIdNot(placa, id);
 
         if (placaEmUso) {
             throw new ResourceAlreadyExistsException("Veículo", "placa", placa);
@@ -139,8 +140,13 @@ public class VeiculoService {
 
     // Função auxiliar para buscar veiculo pelo número da placa (Unique value no banco de dados)
     public Veiculo getVeiculoByPlaca(String placa) {
-        return veiculoRepository.findByPlacaIgnoreCase(placa)
+        return veiculoRepository.findByPlacaIgnoreCase(this.normalizarPlaca(placa))
                 .orElse( null);
+    }
+
+    // Mantém a placa como digitada, removendo apenas os espaços nas pontas
+    private String normalizarPlaca(String placa) {
+        return placa.trim();
     }
 
     private VeiculoSaveDto toDto(Veiculo veiculo) {
