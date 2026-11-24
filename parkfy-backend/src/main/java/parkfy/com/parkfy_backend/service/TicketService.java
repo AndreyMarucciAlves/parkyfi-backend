@@ -33,9 +33,18 @@ public class TicketService {
     private final TipoVeiculoService tipoVeiculoService;
 
 
+    /**
+     * Retorna os tickets paginados, filtrando opcionalmente pelo status
+     * @param filterPageable dto com os dados de paginação e ordenação
+     * @param status status desejado; quando nulo, retorna todos os tickets
+     * @return dto com os dados de paginação e a lista de tickets
+     */
     @Transactional(readOnly = true)
-    public ResponsePagedCommom<TicketResponseDto> findAllPageable(FilterPageable filterPageable) {
-        var listTicketsBd = ticketReposirory.findAll(PageRequest.of(filterPageable.getPage(), filterPageable.getSize(), Sort.by(filterPageable.getDirection(), filterPageable.getOrderBy())));
+    public ResponsePagedCommom<TicketResponseDto> findAllPageable(FilterPageable filterPageable, StatusTicket status) {
+        var pageable = PageRequest.of(filterPageable.getPage(), filterPageable.getSize(), Sort.by(filterPageable.getDirection(), filterPageable.getOrderBy()));
+        var listTicketsBd = status == null
+                ? ticketReposirory.findAll(pageable)
+                : ticketReposirory.findAllByStatus(status, pageable);
 
         var listTicketsResponse = listTicketsBd.stream()
                 .map(this::toDto)

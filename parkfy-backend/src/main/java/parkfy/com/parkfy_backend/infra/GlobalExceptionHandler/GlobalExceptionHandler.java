@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import parkfy.com.parkfy_backend.infra.exception.BadRequestException;
 import parkfy.com.parkfy_backend.infra.exception.ResourceAlreadyExistsException;
 import parkfy.com.parkfy_backend.infra.exception.ResourceNotFoundException;
@@ -48,6 +49,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ApiErrorResponse> handleBadRequestException(BadRequestException exception) {
         return buildResponse(HttpStatus.BAD_REQUEST, exception.getMessage());
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiErrorResponse> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException exception) {
+        return buildResponse(HttpStatus.BAD_REQUEST, "Valor inválido para o parâmetro: " + exception.getName());
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

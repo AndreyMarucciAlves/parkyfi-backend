@@ -86,13 +86,35 @@ class TicketServiceTest {
             Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "dataEntrada"));
             when(ticketReposirory.findAll(pageable)).thenReturn(new PageImpl<>(List.of(ticket), pageable, 1));
 
-            ResponsePagedCommom<TicketResponseDto> resposta = ticketService.findAllPageable(filtro);
+            ResponsePagedCommom<TicketResponseDto> resposta = ticketService.findAllPageable(filtro, null);
 
             assertThat(resposta.getData()).containsExactly(new TicketResponseDto(
                     1L, 5L, PLACA, entrada, saida, new BigDecimal("20.00"), StatusTicket.FECHADO));
             assertThat(resposta.getTotalRecords()).isEqualTo(1L);
             assertThat(resposta.getTotalPages()).isEqualTo(1);
             assertThat(resposta.getPageSize()).isEqualTo(10);
+            verify(ticketReposirory, never()).findAllByStatus(any(), any());
+        }
+
+        @Test
+        @DisplayName("filtra pelo status no banco e calcula a paginação só com os tickets daquele status")
+        void deveFiltrarTicketsPorStatus() {
+            Veiculo veiculo = criarVeiculo(5L, criarTipoVeiculo("10.00"));
+            LocalDateTime entrada = LocalDateTime.of(2026, 1, 10, 8, 0);
+            LocalDateTime saida = LocalDateTime.of(2026, 1, 10, 10, 0);
+            Ticket ticket = new Ticket(1L, entrada, saida, new BigDecimal("20.00"), StatusTicket.FECHADO, veiculo);
+
+            FilterPageable filtro = new FilterPageable(1, 5, Sort.Direction.DESC, "id");
+            Pageable pageable = PageRequest.of(1, 5, Sort.by(Sort.Direction.DESC, "id"));
+            when(ticketReposirory.findAllByStatus(StatusTicket.FECHADO, pageable))
+                    .thenReturn(new PageImpl<>(List.of(ticket), pageable, 6));
+
+            ResponsePagedCommom<TicketResponseDto> resposta = ticketService.findAllPageable(filtro, StatusTicket.FECHADO);
+
+            assertThat(resposta.getData()).extracting(TicketResponseDto::status).containsOnly(StatusTicket.FECHADO);
+            assertThat(resposta.getTotalRecords()).isEqualTo(6L);
+            assertThat(resposta.getTotalPages()).isEqualTo(2);
+            verify(ticketReposirory, never()).findAll(any(Pageable.class));
         }
     }
 
